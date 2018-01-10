@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path"
 
 	"github.com/google/go-github/github"
+	"golang.org/x/oauth2"
 	git "gopkg.in/src-d/go-git.v4"
 )
 
@@ -19,31 +19,45 @@ func must(err error) {
 }
 
 func main() {
-	username := flag.String("u", "", "username")
+	org := flag.String("o", "", "organisation")
+	token := flag.String("t", "", "token")
 	flag.Parse()
 
-	if *username == "" {
-		log.Fatal("Please pass in a -u flag")
+	if *org == "" {
+		log.Fatal("missing -o flag")
+	}
+
+	if *token == "" {
+		log.Fatal("missing -t flag")
 	}
 
 	ctx := context.Background()
-	client := github.NewClient(nil)
 
-	repos, _, err := client.Repositories.List(ctx, *username, nil)
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: *token},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+
+	client := github.NewClient(tc)
+	repos, _, err := client.Repositories.ListByOrg(ctx, *org, &github.RepositoryListByOrgOptions{
+		ListOptions: github.ListOptions{
+			PerPage: 1000,
+		},
+	})
 	must(err)
 
-	err = os.MkdirAll(*username, os.ModePerm)
+	err = os.MkdirAll(*org, os.ModePerm)
 	must(err)
 
 	for _, repo := range repos {
-		path := path.Join(*username, *repo.Name)
-		url := fmt.Sprintf("https://github.com/%s/%s", *username, *repo.Name)
+		url := fmt.Sprintf("https://%s:x-oauth-basic@github.com/%s", *token, *repo.FullName)
 
-		_, err = git.PlainClone(path, false, &git.CloneOptions{
-			URL: url,
+		_, err = git.PlainClone(*repo.FullName, false, &git.CloneOptions{
+			URL:      url,
+			Progress: os.Stdout,
 		})
 		if err != nil {
-			fmt.Printf("%s: %s\n", url, err)
+			fmt.Printf("%s: %s\n", *repo.CloneURL, err)
 		}
 	}
 }

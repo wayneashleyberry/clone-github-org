@@ -2,5 +2,5 @@
 
 ```sh
 go get github.com/wayneashleyberry/clone-github-org
-clone-github-org -u facebook
+clone-github-org -o org -t personal-access-token
 ```
