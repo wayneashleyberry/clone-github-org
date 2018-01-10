@@ -1,3 +1,10 @@
+// Clone an entire GitHub organisation.
+//
+// Usage:
+//  clone-github-org -o org-name -t personal-access-token
+//
+// Example:
+//   clone-github-org -o google -t 1234
 package main
 
 import (
