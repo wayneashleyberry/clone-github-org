@@ -47,7 +47,9 @@ func main() {
 
 	client := github.NewClient(tc)
 	repos, _, err := client.Repositories.ListByOrg(ctx, *org, &github.RepositoryListByOrgOptions{
+		Type: "all",
 		ListOptions: github.ListOptions{
+			Page:    0,
 			PerPage: 1000,
 		},
 	})
