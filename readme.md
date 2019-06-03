@@ -7,5 +7,11 @@
 #### Installation
 
 ```sh
-go get github.com/wayneashleyberry/clone-github-org
+$ go get github.com/wayneashleyberry/clone-github-org
+```
+
+#### Usage
+
+```sh
+$ clone-github-org -o [org] -t [token]
 ```
