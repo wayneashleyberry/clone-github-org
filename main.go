@@ -72,7 +72,7 @@ func main() {
 	must(err)
 
 	for _, repo := range repos {
-		fmt.Println("git clone ", string(*repo.CloneURL))
+		fmt.Println("git clone", string(*repo.CloneURL))
 		url := fmt.Sprintf("https://%s:x-oauth-basic@github.com/%s", *token, *repo.FullName)
 
 		_, err = git.PlainClone(*repo.FullName, false, &git.CloneOptions{
