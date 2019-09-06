@@ -45,17 +45,30 @@ func main() {
 	)
 	tc := oauth2.NewClient(ctx, ts)
 
+	page := 0
+	empty := false
 	client := github.NewClient(tc)
-	repos, _, err := client.Repositories.ListByOrg(ctx, *org, &github.RepositoryListByOrgOptions{
-		Type: "all",
-		ListOptions: github.ListOptions{
-			Page:    0,
-			PerPage: 1000,
-		},
-	})
-	must(err)
 
-	err = os.MkdirAll(*org, os.ModePerm)
+	repos := []*github.Repository{}
+
+	for empty == false {
+		resp, _, err := client.Repositories.ListByOrg(ctx, *org, &github.RepositoryListByOrgOptions{
+			Type: "all",
+			ListOptions: github.ListOptions{
+				Page:    page,
+				PerPage: 100,
+			},
+		})
+		must(err)
+
+		repos = append(repos, resp...)
+		if len(resp) == 0 {
+			empty = true
+		}
+		page++
+	}
+
+	err := os.MkdirAll(*org, os.ModePerm)
 	must(err)
 
 	for _, repo := range repos {
