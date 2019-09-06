@@ -78,7 +78,6 @@ func main() {
 		_, err = git.PlainClone(*repo.FullName, false, &git.CloneOptions{
 			URL:      url,
 			Progress: os.Stdout,
-			Depth:    1,
 		})
 		if err != nil {
 			fmt.Printf("%s: %s\n", *repo.CloneURL, err)
