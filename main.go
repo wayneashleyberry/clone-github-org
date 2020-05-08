@@ -51,7 +51,7 @@ func main() {
 
 	repos := []*github.Repository{}
 
-	for empty == false {
+	for !empty {
 		resp, _, err := client.Repositories.ListByOrg(ctx, *org, &github.RepositoryListByOrgOptions{
 			Type: "all",
 			ListOptions: github.ListOptions{
